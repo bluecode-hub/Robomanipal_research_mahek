@@ -1,10 +1,20 @@
+from indexer import build_index
+from retriever import SemanticRetriever
+from rag_pipeline import RAGPipeline
+
 from llm.client import GeminiClient
 from llm.controller import LLMController
 
-client = GeminiClient()
-controller = LLMController(client)
+def main():
+    embedder, store = build_index()
+    retriever = SemanticRetriever(embedder, store)
 
-user_input = input("Enter text: ")
+    client = GeminiClient()
+    llm = LLMController(client)
+    rag = RAGPipeline(retriever, llm)
 
-result = controller.run(user_input)
-print(result)
+    query = input("Enter your question: ")
+    print(rag.answer(query))
+
+if __name__ == "__main__":
+    main()

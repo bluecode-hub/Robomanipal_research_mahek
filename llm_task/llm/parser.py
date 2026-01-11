@@ -1,4 +1,5 @@
 import json
+import re
 
 class OutputValidationError(Exception):
     pass
@@ -6,8 +7,11 @@ class OutputValidationError(Exception):
 class OutputParser:
     @staticmethod
     def parse(raw_output: str) -> dict:
+        # 🔥 REMOVE ```json ... ``` wrappers if present
+        cleaned = re.sub(r"```json|```", "", raw_output).strip()
+
         try:
-            data = json.loads(raw_output)
+            data = json.loads(cleaned)
         except json.JSONDecodeError:
             raise OutputValidationError("Invalid JSON output")
 
